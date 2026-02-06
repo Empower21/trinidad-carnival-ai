@@ -163,11 +163,20 @@
             margin-top: 20px;
         }
         .close-btn {
-            margin-top: 10px;
-            background: none;
-            border: none;
-            color: #888;
+            margin-top: 15px;
+            padding: 12px 30px;
+            background: #f0f0f0;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            color: #666;
             cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .close-btn:hover {
+            background: #e0e0e0;
+            border-color: #999;
         }
         .footer {
             background: #1a202c;
@@ -233,7 +242,7 @@
                 <li>WhatsApp Support Line</li>
             </ul>
             <a href="https://automate05.gumroad.com/l/ngdpo" target="_blank" class="buy-btn">Buy Now - $19.99</a>
-            <button class="close-btn" onclick="closeVIP()">Maybe Later</button>
+            <button type="button" class="close-btn" id="closeBtnModal">Maybe Later</button>
         </div>
     </div>
 
@@ -290,6 +299,20 @@
 
         function showVIP() { document.getElementById('vipModal').classList.remove('hidden'); }
         function closeVIP() { document.getElementById('vipModal').classList.add('hidden'); }
+
+        // Event listeners for closing modal
+        document.getElementById('closeBtnModal').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeVIP();
+        });
+
+        // Click outside modal to close
+        document.getElementById('vipModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVIP();
+            }
+        });
     </script>
 </body>
 </html>
