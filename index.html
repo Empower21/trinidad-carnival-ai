@@ -150,9 +150,9 @@
         .modal-content ul { text-align: left; margin: 20px 0; padding-left: 20px; }
         .modal-content li { margin: 8px 0; }
         .buy-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
+            display: inline-block;
+            width: auto;
+            padding: 15px 40px;
             background: #48bb78;
             color: white;
             border: none;
@@ -162,8 +162,14 @@
             text-decoration: none;
             margin-top: 20px;
         }
+        .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
         .close-btn {
-            margin-top: 15px;
             padding: 12px 30px;
             background: #f0f0f0;
             border: 2px solid #ccc;
@@ -173,6 +179,8 @@
             font-size: 1rem;
             font-weight: 500;
             transition: all 0.2s;
+            position: relative;
+            z-index: 10;
         }
         .close-btn:hover {
             background: #e0e0e0;
@@ -241,8 +249,10 @@
                 <li>Complete Packing List</li>
                 <li>WhatsApp Support Line</li>
             </ul>
-            <a href="https://automate05.gumroad.com/l/ngdpo" target="_blank" class="buy-btn">Buy Now - $19.99</a>
-            <button type="button" class="close-btn" id="closeBtnModal">Maybe Later</button>
+            <div class="modal-buttons">
+                <a href="https://automate05.gumroad.com/l/ngdpo" target="_blank" class="buy-btn">Buy Now - $19.99</a>
+                <span class="close-btn" id="closeBtnModal" role="button" tabindex="0">Maybe Later</span>
+            </div>
         </div>
     </div>
 
@@ -297,22 +307,37 @@
             userInput.focus();
         }
 
-        function showVIP() { document.getElementById('vipModal').classList.remove('hidden'); }
-        function closeVIP() { document.getElementById('vipModal').classList.add('hidden'); }
+        function showVIP() {
+            document.getElementById('vipModal').classList.remove('hidden');
+        }
 
-        // Event listeners for closing modal
-        document.getElementById('closeBtnModal').addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            closeVIP();
-        });
+        function closeVIP() {
+            document.getElementById('vipModal').classList.add('hidden');
+        }
 
-        // Click outside modal to close
-        document.getElementById('vipModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeVIP();
+        // Wait for DOM to be fully loaded
+        window.onload = function() {
+            // Close button click
+            var closeBtn = document.getElementById('closeBtnModal');
+            if (closeBtn) {
+                closeBtn.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeVIP();
+                    return false;
+                };
             }
-        });
+
+            // Click outside modal to close
+            var modal = document.getElementById('vipModal');
+            if (modal) {
+                modal.onclick = function(e) {
+                    if (e.target === modal) {
+                        closeVIP();
+                    }
+                };
+            }
+        };
     </script>
 </body>
 </html>
