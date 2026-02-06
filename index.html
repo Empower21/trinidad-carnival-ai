@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trinidad Carnival AI - Your Free Carnival Guide</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #e63946, #f4a261);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .chat-header h1 { font-size: 1.5rem; margin-bottom: 5px; }
+        .chat-header p { font-size: 0.9rem; opacity: 0.9; }
+        .vip-banner {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: #333;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .vip-banner:hover { opacity: 0.9; }
+        .chat-messages {
+            height: 320px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .message { margin-bottom: 15px; display: flex; flex-direction: column; }
+        .message.user { align-items: flex-end; }
+        .message.bot { align-items: flex-start; }
+        .message-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+        .message.user .message-bubble {
+            background: #e63946;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .message.bot .message-bubble {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #eee;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+        }
+        .chat-input input:focus { border-color: #e63946; }
+        .chat-input button {
+            margin-left: 10px;
+            padding: 12px 24px;
+            background: #e63946;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+        .chat-input button:disabled { background: #ccc; }
+        .typing { color: #888; font-style: italic; padding: 10px; }
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #f8f9fa;
+        }
+        .quick-btn {
+            padding: 8px 14px;
+            background: white;
+            border: 1px solid #e63946;
+            color: #e63946;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .quick-btn:hover { background: #e63946; color: white; }
+        .affiliate-links {
+            display: flex;
+            gap: 10px;
+            padding: 10px 20px;
+            background: #2d3748;
+        }
+        .affiliate-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+        .hotel-btn { background: #3182ce; color: white; }
+        .tour-btn { background: #38a169; color: white; }
+        .hidden { display: none; }
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            text-align: center;
+        }
+        .modal-content h2 { margin-bottom: 15px; color: #e63946; }
+        .modal-content .price { font-size: 2rem; color: #e63946; font-weight: bold; margin: 15px 0; }
+        .modal-content ul { text-align: left; margin: 20px 0; padding-left: 20px; }
+        .modal-content li { margin: 8px 0; }
+        .buy-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+        .close-btn {
+            margin-top: 10px;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+        }
+        .footer {
+            background: #1a202c;
+            color: #a0aec0;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+        .footer a { color: #63b3ed; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Trinidad Carnival AI</h1>
+            <p>Your FREE guide to Carnival 2026 (Feb 16-17)</p>
+        </div>
+
+        <div class="vip-banner" onclick="showVIP()">
+            Get the VIP Carnival Package - $19.99
+        </div>
+
+        <div class="affiliate-links">
+            <a href="https://www.booking.com/searchresults.html?ss=Trinidad&aid=2761896" target="_blank" class="affiliate-btn hotel-btn">Book Hotels</a>
+            <a href="https://www.viator.com/?pid=P00287639&mcid=42383&medium=link&campaign=Trinidad-Carnival" target="_blank" class="affiliate-btn tour-btn">Book Tours</a>
+        </div>
+
+        <div class="quick-buttons">
+            <button class="quick-btn" onclick="sendQuick('What bands are playing?')">Bands</button>
+            <button class="quick-btn" onclick="sendQuick('Tell me about Jouvert')">Jouvert</button>
+            <button class="quick-btn" onclick="sendQuick('Best fetes?')">Fetes</button>
+            <button class="quick-btn" onclick="sendQuick('Safety tips')">Safety</button>
+        </div>
+
+        <div class="chat-messages" id="messages">
+            <div class="message bot">
+                <div class="message-bubble">Hey! I'm your Trinidad Carnival AI guide! Ask me anything about Carnival 2026 - bands, J'ouvert, fetes, hotels, tours, food, or safety tips!</div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Ask about Carnival..." onkeypress="if(event.key==='Enter')sendMessage()">
+            <button onclick="sendMessage()" id="sendBtn">Send</button>
+        </div>
+
+        <div class="footer">
+            Powered by <a href="https://amdrautomate.ai" target="_blank">AMDR Automate AI</a>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="vipModal">
+        <div class="modal-content">
+            <h2>VIP Carnival Package</h2>
+            <div class="price">$19.99</div>
+            <p>Everything for the ultimate Carnival!</p>
+            <ul>
+                <li>Complete Band Comparison Guide</li>
+                <li>Top 20 Fetes Calendar + Ticket Links</li>
+                <li>J'ouvert Survival Checklist</li>
+                <li>Local Food & Restaurant Guide</li>
+                <li>Safety Tips from Locals</li>
+                <li>Complete Packing List</li>
+                <li>WhatsApp Support Line</li>
+            </ul>
+            <a href="https://automate05.gumroad.com/l/ngdpo" target="_blank" class="buy-btn">Buy Now - $19.99</a>
+            <button class="close-btn" onclick="closeVIP()">Maybe Later</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://n8n.amdrautomate.ai/webhook/carnival-chat';
+        const messagesDiv = document.getElementById('messages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + (isUser ? 'user' : 'bot');
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+            bubbleDiv.textContent = text;
+            messageDiv.appendChild(bubbleDiv);
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function sendQuick(text) {
+            userInput.value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+            addMessage(message, true);
+            userInput.value = '';
+            sendBtn.disabled = true;
+
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing';
+            typingDiv.textContent = 'Typing...';
+            messagesDiv.appendChild(typingDiv);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+                const data = await response.json();
+                typingDiv.remove();
+                addMessage(data.reply || 'Sorry, try again!', false);
+            } catch (error) {
+                typingDiv.remove();
+                addMessage('Connection error. Please try again.', false);
+            }
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+
+        function showVIP() { document.getElementById('vipModal').classList.remove('hidden'); }
+        function closeVIP() { document.getElementById('vipModal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
